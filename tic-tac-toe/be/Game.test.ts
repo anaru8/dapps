@@ -2,8 +2,10 @@ import {
   applyMove,
   createGame,
   findWinner,
+  makeDaemonMove,
   restartGame,
   selectOpponent,
+  startDaemonGame,
 } from "./Game.ts";
 import type { Cell } from "./Types.ts";
 
@@ -49,6 +51,28 @@ Deno.test("players must alternate and cannot overwrite a square", () => {
   );
 });
 
+Deno.test("the first uninvited move starts a game against the daemon", () => {
+  let game = startDaemonGame(createGame("g1", "alice"));
+  game = applyMove(game, "alice", 0, game.version, "m1");
+  game = makeDaemonMove(game);
+  equal(game.opponentType, "daemon");
+  equal(game.board, ["X", "", "", "", "O", "", "", "", ""]);
+  equal(game.turn, "X");
+  equal(game.version, 2);
+  throws(() => selectOpponent(game, "bob"), "against your daemon");
+});
+
+Deno.test("the daemon blocks an immediate winning move", () => {
+  let game = startDaemonGame(createGame("g1", "alice"));
+  game = makeDaemonMove(
+    applyMove(game, "alice", 0, game.version, "m1"),
+  );
+  game = makeDaemonMove(
+    applyMove(game, "alice", 1, game.version, "m2"),
+  );
+  equal(game.board[2], "O");
+});
+
 Deno.test("the owner can alternate both marks for testing", () => {
   let game = selectOpponent(createGame("g1", "alice"), "bob");
   game = applyMove(game, "alice", 0, game.version, "m1", true);
@@ -90,4 +114,12 @@ Deno.test("restart clears the board and alternates the starter", () => {
   equal(game.board, ["", "", "", "", "", "", "", "", ""]);
   equal(game.round, 2);
   equal(game.turn, "O");
+});
+
+Deno.test("the daemon opens a round when O starts", () => {
+  let game = startDaemonGame(createGame("g1", "alice"));
+  game = makeDaemonMove(restartGame(game));
+  equal(game.round, 2);
+  equal(game.board[4], "O");
+  equal(game.turn, "X");
 });

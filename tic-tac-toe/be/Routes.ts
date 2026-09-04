@@ -1,5 +1,12 @@
 import { Lifecycle, response, Token } from "webdaemon";
-import { applyMove, createGame, restartGame, selectOpponent } from "./Game.ts";
+import {
+  applyMove,
+  createGame,
+  makeDaemonMove,
+  restartGame,
+  selectOpponent,
+  startDaemonGame,
+} from "./Game.ts";
 import {
   appendRecord,
   getRecord,
@@ -60,6 +67,7 @@ function gameSummary(record: StoredRecord): Record<string, unknown> {
     id: record.id,
     host: game.host,
     opponent: (game.players as { O?: string | null } | undefined)?.O ?? null,
+    opponentType: game.opponentType,
     status: game.status,
     winner: game.winner,
     round: game.round,
@@ -88,6 +96,7 @@ export async function route(request: Request): Promise<Response> {
         "id",
         "host",
         "players",
+        "opponentType",
         "status",
         "winner",
         "round",
@@ -126,6 +135,9 @@ export async function route(request: Request): Promise<Response> {
     const { system: { party } } = Lifecycle.getConfig();
     if (game.host !== normalizeParty(party)) {
       throw "Only the host may invite a player";
+    }
+    if (game.opponentType === "daemon") {
+      throw "This game is already being played against your daemon";
     }
     if (game.players.O && game.players.O !== invitee) {
       throw `This game is already assigned to ${game.players.O}`;
@@ -217,8 +229,20 @@ export async function route(request: Request): Promise<Response> {
 
     const { system: { party } } = Lifecycle.getConfig();
     const game = await withGameLock(id, async () => {
-      const latest = await loadGame(id);
-      const updated = applyMove(latest, party, index, version, moveId, true);
+      let latest = await loadGame(id);
+      if (latest.status === "waiting" && !latest.players.O) {
+        latest = startDaemonGame(latest);
+      }
+      const canPlayBoth = latest.opponentType !== "daemon";
+      let updated = applyMove(
+        latest,
+        party,
+        index,
+        version,
+        moveId,
+        canPlayBoth,
+      );
+      updated = makeDaemonMove(updated);
       await saveGame(updated);
       return updated;
     });
@@ -255,7 +279,7 @@ export async function route(request: Request): Promise<Response> {
       if (latest.host !== normalizeParty(party)) {
         throw "Only the host can start another round";
       }
-      const updated = restartGame(latest);
+      const updated = makeDaemonMove(restartGame(latest));
       await saveGame(updated);
       return updated;
     });

@@ -37,6 +37,9 @@ export function selectOpponent(
   game: GameState,
   opponent: string,
 ): GameState {
+  if (game.opponentType === "daemon") {
+    throw "This game is already being played against your daemon";
+  }
   const party = normalizeParty(opponent);
   if (!party) throw "Enter a daemon hostname";
   if (party === game.host) throw "You cannot invite your own daemon";
@@ -47,8 +50,23 @@ export function selectOpponent(
   return {
     ...game,
     players: { ...game.players, O: party },
+    opponentType: "player",
     status: "playing",
     version: game.version + 1,
+    updatedAt: Date.now(),
+  };
+}
+
+export function startDaemonGame(game: GameState): GameState {
+  if (game.players.O || game.opponentType === "player") {
+    throw "This game already has an invited player";
+  }
+  if (game.opponentType === "daemon") return game;
+  if (game.status !== "waiting") throw "This game has already started";
+  return {
+    ...game,
+    opponentType: "daemon",
+    status: "playing",
     updatedAt: Date.now(),
   };
 }
@@ -84,6 +102,15 @@ export function applyMove(
   const mark = canPlayBoth ? game.turn : markForParty(game, party);
   if (game.turn !== mark) throw "It is not your turn";
 
+  return placeMark(game, index, mark, moveId || undefined);
+}
+
+function placeMark(
+  game: GameState,
+  index: number,
+  mark: Mark,
+  moveId?: string,
+): GameState {
   const board = [...game.board];
   board[index] = mark;
   const winner = findWinner(board);
@@ -97,12 +124,45 @@ export function applyMove(
     winner,
     version: game.version + 1,
     updatedAt: Date.now(),
-    lastMoveId: moveId || undefined,
+    lastMoveId: moveId ?? game.lastMoveId,
   };
 }
 
+export function makeDaemonMove(game: GameState): GameState {
+  if (
+    game.opponentType !== "daemon" ||
+    game.status !== "playing" ||
+    game.turn !== "O"
+  ) {
+    return game;
+  }
+  const index = chooseDaemonMove(game.board);
+  if (index === null) return game;
+  return placeMark(game, index, "O");
+}
+
+export function chooseDaemonMove(board: Cell[]): number | null {
+  const empty = board
+    .map((cell, index) => cell === "" ? index : -1)
+    .filter((index) => index >= 0);
+  if (!empty.length) return null;
+
+  for (const mark of ["O", "X"] as const) {
+    for (const index of empty) {
+      const candidate = [...board];
+      candidate[index] = mark;
+      if (findWinner(candidate) === mark) return index;
+    }
+  }
+
+  return [4, 0, 2, 6, 8, 1, 3, 5, 7].find((index) => board[index] === "") ??
+    null;
+}
+
 export function restartGame(game: GameState): GameState {
-  if (!game.players.O) throw "Add an opponent before starting a round";
+  if (!game.players.O && game.opponentType !== "daemon") {
+    throw "Add an opponent before starting a round";
+  }
   const startingMark: Mark = game.round % 2 === 0 ? "X" : "O";
   return {
     ...game,

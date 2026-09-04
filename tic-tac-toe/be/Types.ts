@@ -23,6 +23,7 @@ export interface GameState {
     X: string;
     O: string | null;
   };
+  opponentType?: "daemon" | "player";
   board: Cell[];
   turn: Mark;
   status: GameStatus;
@@ -61,6 +62,11 @@ export function isGameState(value: unknown): value is GameState {
     !!players &&
     typeof players.X === "string" &&
     (players.O === null || typeof players.O === "string") &&
+    (
+      game.opponentType === undefined ||
+      game.opponentType === "daemon" ||
+      game.opponentType === "player"
+    ) &&
     Array.isArray(board) &&
     board.length === 9 &&
     board.every((cell) => cell === "" || cell === "X" || cell === "O") &&

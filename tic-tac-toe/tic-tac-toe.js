@@ -109,7 +109,9 @@ function gameCard(summary, invited) {
   const button = document.createElement("button");
   button.className = "game-card";
   button.type = "button";
-  const opponent = invited
+  const opponent = summary.opponentType === "daemon"
+    ? "Against your daemon"
+    : invited
     ? `Hosted by ${summary.host}`
     : summary.opponent
     ? `Against ${summary.opponent}`
@@ -194,32 +196,48 @@ function renderGame() {
   if (!currentGame) return;
   const isHost = currentGame.host === party;
   const mark = isHost ? "X" : "O";
+  const daemonGame = currentGame.opponentType === "daemon";
   const opponent = isHost ? currentGame.players.O : currentGame.players.X;
-  const canMove = currentGame.status === "playing" &&
-    (isHost || currentGame.turn === mark);
+  const canMove = (isHost && currentGame.status === "waiting") ||
+    (
+      currentGame.status === "playing" &&
+      (daemonGame
+        ? isHost && currentGame.turn === "X"
+        : isHost || currentGame.turn === mark)
+    );
 
   elements.round.textContent = `Round ${currentGame.round}`;
-  const activeMark = isHost && currentGame.status === "playing"
+  const activeMark = isHost && !daemonGame && currentGame.status === "playing"
     ? currentGame.turn
     : mark;
   elements.mark.textContent = activeMark;
   elements.mark.className = `mark-badge mark-${activeMark.toLowerCase()}`;
   elements.playerX.textContent = isHost ? "You" : currentGame.players.X;
-  elements.playerO.textContent = isHost ? currentGame.players.O : "You";
-  elements.opponentSelected.hidden = !currentGame.players.O;
-  elements.inviteForm.hidden = !isHost || Boolean(currentGame.players.O);
+  elements.playerO.textContent = daemonGame
+    ? "Your daemon"
+    : isHost
+    ? currentGame.players.O
+    : "You";
+  elements.opponentSelected.hidden = !daemonGame && !currentGame.players.O;
+  elements.inviteForm.hidden = !isHost || daemonGame ||
+    Boolean(currentGame.players.O);
   elements.restart.hidden = !isHost ||
     !["won", "draw"].includes(currentGame.status);
 
   if (currentGame.status === "waiting") {
-    elements.status.textContent = "Add another daemon to begin";
+    elements.status.textContent =
+      "Choose a square to play your daemon, or invite a friend";
   } else if (currentGame.status === "won") {
-    const winnerParty = currentGame.players[currentGame.winner];
+    const winnerParty = daemonGame && currentGame.winner === "O"
+      ? "Your daemon"
+      : currentGame.players[currentGame.winner];
     elements.status.textContent = winnerParty === party
       ? `You won as ${currentGame.winner}`
       : `${winnerParty} won as ${currentGame.winner}`;
   } else if (currentGame.status === "draw") {
     elements.status.textContent = "A perfectly balanced draw";
+  } else if (daemonGame) {
+    elements.status.textContent = "Your turn - your daemon replies as O";
   } else if (isHost) {
     const actingFor = currentGame.turn === "X" ? "yourself" : opponent;
     elements.status.textContent = `Play ${currentGame.turn} for ${actingFor}`;
