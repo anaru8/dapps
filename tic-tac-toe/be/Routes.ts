@@ -92,20 +92,7 @@ export async function route(request: Request): Promise<Response> {
     requireCapability(request, Scope.ManageGame);
     const started = await queryRecords({
       type: RecordType.Game,
-      select: [
-        "id",
-        "host",
-        "players",
-        "opponentType",
-        "board",
-        "turn",
-        "status",
-        "winner",
-        "version",
-        "round",
-        "updatedAt",
-        "created",
-      ],
+      select: ["*"],
     });
     const invited = await queryRecords({
       type: RecordType.Ref,
