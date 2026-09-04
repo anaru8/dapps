@@ -1,6 +1,8 @@
 const elements = {
   loading: document.querySelector("#loading"),
   orphan: document.querySelector("#orphan"),
+  startupTitle: document.querySelector("#startup-title"),
+  startupMessage: document.querySelector("#startup-message"),
   home: document.querySelector("#home"),
   game: document.querySelector("#game"),
   party: document.querySelector("#party"),
@@ -85,6 +87,12 @@ function show(name) {
   for (const key of ["loading", "orphan", "home", "game"]) {
     elements[key].hidden = key !== name;
   }
+}
+
+function showStartupError(title, message) {
+  elements.startupTitle.textContent = title;
+  elements.startupMessage.textContent = message;
+  show("orphan");
 }
 
 function showError(element, error) {
@@ -327,30 +335,26 @@ elements.restart.addEventListener("click", async () => {
 elements.back.addEventListener("click", loadHome);
 
 async function initialise() {
-  let opened = false;
-  const orphanTimeout = setTimeout(() => {
-    if (!opened) show("orphan");
-  }, 4000);
   try {
     const { BrowserApp } = await import(
-      "https://webdaemon.online/35.0.4/static/lib/index.js"
+      "https://webdaemon.online/35.0.4/static/lib/js/BrowserApp.js"
     );
     app = await BrowserApp.getInstance("noughts-and-daemons");
     if (app.isOrphan()) {
-      clearTimeout(orphanTimeout);
-      show("orphan");
+      showStartupError(
+        "Open this app from Web Daemon",
+        "The game needs your daemon identity and private app backend.",
+      );
       return;
     }
-    opened = true;
-    clearTimeout(orphanTimeout);
     party = app.getParty().toLowerCase();
     elements.party.textContent = party;
     elements.party.hidden = false;
     api = new Api(await app.getAgentUrl("v1"), app);
     await loadHome();
   } catch (error) {
-    clearTimeout(orphanTimeout);
-    show("orphan");
+    const message = error instanceof Error ? error.message : String(error);
+    showStartupError("Could not start the app", message);
     console.error(error);
   }
 }
