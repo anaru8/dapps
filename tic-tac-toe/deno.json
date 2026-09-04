@@ -1,0 +1,12 @@
+{
+  "imports": {
+    "webdaemon": "npm:webdaemon@35.0.4"
+  },
+  "nodeModulesDir": "none",
+  "fmt": {
+    "exclude": ["README.md"]
+  },
+  "tasks": {
+    "verify": "deno fmt --check && deno test be/Game.test.ts && deno check be/server.ts"
+  }
+}

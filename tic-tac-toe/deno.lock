@@ -1,0 +1,17 @@
+{
+  "version": "5",
+  "specifiers": {
+    "npm:webdaemon@35.0.4": "35.0.4"
+  },
+  "npm": {
+    "webdaemon@35.0.4": {
+      "integrity": "sha512-LQwHiRQbaMEU7ZztWH9QkvJQjRnqUSf2mylEtqsoMhprQkB/2ZeOqPRIWLrTcDRDTYarD5NlXi5oS7S4KEhvBg==",
+      "bin": true
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "npm:webdaemon@35.0.4"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "webdaemon": "npm:webdaemon@35.0.4"
+  }
+}

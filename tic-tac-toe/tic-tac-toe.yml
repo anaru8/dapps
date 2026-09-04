@@ -1,0 +1,33 @@
+etag: 1
+title: Noughts and Daemons
+
+scope:
+  manage_game:
+    description: Can create games, invite an opponent, and make the owner's moves.
+  play_game:
+    description: Can accept invitations, read shared games, and submit moves as an opponent.
+  write_memory:
+    description: Can store tic-tac-toe games in structured memory.
+  read_memory:
+    description: Can read tic-tac-toe games from structured memory.
+
+grant:
+  ${party}:
+    ${source}: manage_game write_memory read_memory
+  "%":
+    ${source}: play_game
+
+audience:
+  ${party}:
+    ${source}: manage_game
+
+tab:
+  v1:
+    src: be/server.ts
+    importmap: be/importmap.json
+    ttl: 300
+
+log:
+  default:
+    rotateEvery: 5 mins
+    rotateToDrive: true
