@@ -1,0 +1,17 @@
+etag: 1
+title: Terminal
+scope:
+  terminal:
+    description: Can open an interactive shell in the daemon container as the terminal service user.
+    constrain: ${party}
+grant:
+  ${party}:
+    ${source}: terminal
+audience:
+  ${party}:
+    ${source}: terminal
+tab:
+  v1:
+    src: be/server.ts
+    importmap: be/importmap.json
+    ttl: 60

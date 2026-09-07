@@ -1,0 +1,24 @@
+{
+  "version": "5",
+  "specifiers": {
+    "npm:webdaemon@36.0.0": "36.0.0"
+  },
+  "npm": {
+    "webdaemon@36.0.0": {
+      "integrity": "sha512-W/fxtMqL2iSzP3UlvQ9JfGR5jMgxwhjLWHI3DL8ZuwUH4zb7Wz4gZULakOowP9g51lEN9rpBzKZvdnHkhvEeqg==",
+      "bin": true
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "npm:webdaemon@36.0.0"
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@xterm/addon-fit@0.11.0",
+        "npm:@xterm/xterm@6.0.0",
+        "npm:webdaemon@36.0.0"
+      ]
+    }
+  }
+}

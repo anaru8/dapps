@@ -1,0 +1,8 @@
+{
+  "name": "webdaemon-term",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "node bridge/server.mjs", "test": "node --test tests/*.test.mjs" },
+  "dependencies": { "webdaemon": "36.0.0", "@xterm/xterm": "6.0.0", "@xterm/addon-fit": "0.11.0" },
+  "engines": { "node": ">=22" }
+}

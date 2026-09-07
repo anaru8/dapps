@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10151d">
+    <title>Terminal</title>
+    <link rel="webdaemon" href="term.yml">
+    <link rel="icon" href="term.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="vendor/xterm.css">
+    <link rel="stylesheet" href="term.css">
+    <script src="vendor/xterm.js" defer></script>
+    <script src="vendor/addon-fit.js" defer></script>
+    <script type="module" src="term.js"></script>
+  </head>
+  <body>
+    <header>
+      <div
+        class="identity"><span class="mark" aria-hidden="true">&gt;_</span><div><h1>Terminal</h1><span id="party">Web Daemon</span></div></div>
+      <div
+        class="actions"><button id="clear" disabled>Clear</button><button id="close" disabled>Close shell</button><button id="open" disabled>Open shell</button></div>
+    </header>
+    <main>
+      <div
+        class="statusbar"><span id="status" role="status">Connecting to Web Daemon...</span><span id="size"></span></div>
+      <p id="error" role="alert" hidden></p>
+      <div id="terminal" aria-label="Daemon terminal"></div>
+      <div id="welcome">
+        <div class="welcome-mark" aria-hidden="true">&gt;_</div>
+        <h2>Your daemon. Your shell.</h2>
+        <p>Open an interactive terminal in the daemon container.</p>
+      </div>
+    </main>
+    <footer><span>Shell runs as the terminal service user</span><span>Ctrl+C interrupt · Ctrl+D exit</span></footer>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "imports": { "webdaemon": "npm:webdaemon@36.0.0" },
+  "nodeModulesDir": "none",
+  "tasks": { "check": "deno check be/server.ts" }
+}

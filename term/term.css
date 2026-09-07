@@ -1,0 +1,160 @@
+:root {
+  color-scheme: dark;
+  font-family: system-ui, sans-serif;
+  color: #dce4ee;
+  background: #10151d;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 24px;
+  border-bottom: 1px solid #2b3543;
+}
+.identity,
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mark {
+  color: #80ddaf;
+  font: 28px monospace;
+}
+h1 {
+  font-size: 17px;
+  margin: 0 0 3px;
+  font-weight: 600;
+}
+#party {
+  color: #98a7ba;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+button {
+  border: 1px solid #3c4b60;
+  border-radius: 7px;
+  background: #1a2431;
+  color: #dce4ee;
+  padding: 9px 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+button:hover:not(:disabled) {
+  background: #2b3b50;
+}
+button:focus-visible {
+  outline: 2px solid #80ddaf;
+  outline-offset: 3px;
+}
+button:disabled {
+  opacity: .4;
+  cursor: default;
+}
+#open {
+  background: #80ddaf;
+  border-color: #80ddaf;
+  color: #10231b;
+  font-weight: 600;
+}
+#open:hover:not(:disabled) {
+  background: #a2efc8;
+}
+main {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 20px 24px;
+  border: 1px solid #2b3543;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0b1017;
+}
+.statusbar {
+  background: #161e29;
+  padding: 11px 15px;
+  font-size: 12px;
+  color: #a5b3c5;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+#terminal {
+  flex: 1;
+  min-height: 0;
+  padding: 12px;
+}
+#error {
+  margin: 0;
+  padding: 12px 15px;
+  color: #ffb7b7;
+  background: #372027;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+#welcome {
+  position: absolute;
+  inset: 55px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  text-align: center;
+}
+.welcome-mark {
+  font: 48px monospace;
+  color: #80ddaf;
+  margin-bottom: 12px;
+}
+h2 {
+  font-weight: 500;
+  font-size: 22px;
+  margin: 10px 0;
+}
+#welcome p {
+  color: #98a7ba;
+  font-size: 14px;
+}
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 24px 18px;
+  color: #8190a3;
+  font-size: 11px;
+}
+[hidden] {
+  display: none !important;
+}
+@media (max-width: 600px) {
+  header {
+    padding: 14px;
+    flex-wrap: wrap;
+  }
+  main {
+    margin: 12px;
+  }
+  footer {
+    padding: 0 12px 12px;
+    flex-wrap: wrap;
+  }
+  .actions {
+    gap: 8px;
+  }
+  button {
+    padding: 8px 10px;
+  }
+}
